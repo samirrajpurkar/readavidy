@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    readavidy
+{% endblock %}
+
+{% block body %}
+  <form action="#">
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" class="form-control" id="username">
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label>
+      <input type="password" class="form-control" id="pwd">
+    </div>
+    <div class="checkbox">
+      <label><input type="checkbox"> Remember me</label>
+    </div>
+    <button type="submit" class="btn btn-outline-primary">Submit</button>
+  </form>
+{% endblock %}
