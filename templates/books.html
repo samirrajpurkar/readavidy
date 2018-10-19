@@ -1,0 +1,14 @@
+{% extends "loggedinlayout.html" %}
+
+{% block title %}
+    Success!
+{% endblock %}
+
+{% block body %}
+    <h1>Logged In...</h1>
+
+    You have successfully logged in... Let us begin....!
+    {% for book in books %}
+      {{book.isbn}}
+    {%endfor %}
+{% endblock %}

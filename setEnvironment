@@ -1,3 +1,5 @@
+source activate py37
+
 export FLASK_APP=application.py
 
 export FLASK_DEBUG=1
@@ -5,4 +7,11 @@ export FLASK_DEBUG=1
 
 export DATABASE_URL=postgres://vautjsutalmzqu:615a77a1254db77b22dc00ffb4605ebbc0d7f9ac7b91c87c0ea8755c7d1f0105@ec2-174-129-35-61.compute-1.amazonaws.com:5432/dddhk5717mcomi
 
+Adminer
+https://adminer.cs50.net/?pgsql=ec2-174-129-35-61.compute-1.amazonaws.com
+
+System: PostgreSQL
+Server: ec2-174-129-35-61.compute-1.amazonaws.com
+username: vautjsutalmzqu
+database: dddhk5717mcomi
 
