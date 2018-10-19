@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Book Details</h1>
+    <h5>Book Details</h5>
     
     <ul class="list-group list-group-flush">
       <li class="list-group-item">ID: {{book.id}}</li>
@@ -15,4 +15,71 @@
       <li class="list-group-item">YEAR: {{book.year}}</li>
     </ul>  
     <hr>  
+
+    
+    {% if reviews %}
+    <h5>Review Details</h5>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">book_id</th>
+          <th scope="col">user_id</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Review</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for review in reviews %}
+          <tr>
+            <th scope="row">{{review.id}}</th>       
+            <td>{{review.book_id}}</td>
+            <td>{{review.user_id}}</td>
+            <td>{{review.rating}}</td>
+            <td>{{review.review}}</td>
+          </tr>          
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <hr>
+    <h5>Add Review</h5>
+    <form action="{{ url_for('add_review') }}" method="post">
+
+        <div class="form-group">
+            <label for="rating">Rating:</label>
+            <select class="form-control" name="rating">
+                {% for rating in [1,2,3,4,5] %}
+                    <option value={{rating}}>
+                        {{rating}}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" 
+                    name="review" 
+                    placeholder="Review please...!">
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" 
+                    name="user_id" 
+                    value={{username}}>
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" 
+                    name="book_id" 
+                    value={{book.id}}>
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-primary">Add Review</button>
+        </div>
+
+    </form>
+
 {% endblock %}

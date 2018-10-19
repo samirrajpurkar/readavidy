@@ -36,7 +36,7 @@ def register():
 @app.route('/logout')
 def logout():
    # remove the username from the session if it is there
-   #session.pop('username', None)
+   session.pop('username', None)
    return redirect(url_for('index'))
 
 @app.route("/books")
@@ -44,20 +44,37 @@ def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
 
+
+@app.route("/add_review", methods=["POST"])
+def add_review():
+  """Add review for that book"""
+  
+  # book = db.execute("SELECT * FROM books WHERE id = :id", {
+  #   "id": book_id,
+  #   }).fetchone()
+
+  # # Get all reviews.
+  # reviews = db.execute("SELECT * FROM REVIEWS WHERE book_id = :book_id",
+  #                           {"book_id": book_id}).fetchall()
+  print(request.form.get("review"))
+  print("Adding review...")
+
+  return render_template("success.html", message="Success")
+
+
 @app.route("/books/<int:book_id>")
 def book(book_id):
   """Lists details about a single book."""
-  """
-  # Make sure flight exists.
-    flight = db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).fetchone()
-    if flight is None:
-        return render_template("error.html", message="No such flight.")
-  """
+
   book = db.execute("SELECT * FROM books WHERE id = :id", {
     "id": book_id,
     }).fetchone()
 
-  return render_template("book.html", book=book)
+  # Get all reviews.
+  reviews = db.execute("SELECT * FROM REVIEWS WHERE book_id = :book_id",
+                            {"book_id": book_id}).fetchall()
+
+  return render_template("book.html", book=book, reviews = reviews, username=session["username"])
 
 
 @app.route("/login_user", methods=["POST"])
@@ -65,6 +82,7 @@ def login_user():
   print(request.form.get("username"))
   print(request.form.get("password"))
   print(request.form.get("rememberme"))
+
   
   try:
     username = request.form.get("username")
@@ -75,6 +93,9 @@ def login_user():
     password = request.form.get("password")
   except ValueError:
     return render_template("error_login_user.html", message="Invalid password")
+
+  if username not in session:
+    session["username"] = request.form.get("username")
 
   # check for the username and password
   if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": username, "password": password}).rowcount == 1:
@@ -102,6 +123,9 @@ def register_user():
     password = request.form.get("password")
   except ValueError:
     return render_template("error_register_user.html", message="Invalid password")
+
+  if username not in session:
+    session["username"] = request.form.get("username")
 
   # check if the same username exists in the database
   # if so return error
