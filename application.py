@@ -25,6 +25,10 @@ db = scoped_session(sessionmaker(bind=engine))
 def index():
     return render_template("index.html")
 
+@app.route("/login")
+def login():
+  return render_template("login.html")
+
 @app.route("/register")
 def register():
   return render_template("register.html")
@@ -33,6 +37,31 @@ def register():
 def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
+
+@app.route("/login_user", methods=["POST"])
+def login_user():
+  print(request.form.get("username"))
+  print(request.form.get("password"))
+  print(request.form.get("rememberme"))
+  
+  try:
+    username = request.form.get("username")
+  except ValueError:
+    return render_template("error_login_user.html", message="Invalid username.")
+
+  try:
+    password = request.form.get("password")
+  except ValueError:
+    return render_template("error_login_user.html", message="Invalid password")
+
+  # check for the username and password
+  if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": username, "password": password}).rowcount == 1:
+    books = db.execute("SELECT * FROM books")
+    return render_template("success_login_user.html", message="You have successfully logged into the system... awesome!", books= books)
+  
+  return render_template("error_login_user.html", message="Invalid Login attempt...")
+
+
 
 @app.route("/register_user", methods=["POST"])
 def register_user():
