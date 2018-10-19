@@ -44,6 +44,22 @@ def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
 
+@app.route("/books/<int:book_id>")
+def book(book_id):
+  """Lists details about a single book."""
+  """
+  # Make sure flight exists.
+    flight = db.execute("SELECT * FROM flights WHERE id = :id", {"id": flight_id}).fetchone()
+    if flight is None:
+        return render_template("error.html", message="No such flight.")
+  """
+  book = db.execute("SELECT * FROM books WHERE id = :id", {
+    "id": book_id,
+    }).fetchone()
+
+  return render_template("book.html", book=book)
+
+
 @app.route("/login_user", methods=["POST"])
 def login_user():
   print(request.form.get("username"))
@@ -62,8 +78,8 @@ def login_user():
 
   # check for the username and password
   if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": username, "password": password}).rowcount == 1:
-    books = db.execute("SELECT * FROM books")
-    return render_template("success_login_user.html", message="You have successfully logged into the system... awesome!", books= books)
+    books = db.execute("SELECT * FROM books").fetchall()
+    return render_template("books.html", message="You have successfully logged into the system... awesome!", books= books)
   
   return render_template("error_login_user.html", message="Invalid Login attempt...")
 
@@ -93,5 +109,5 @@ def register_user():
     return render_template("error_register_user.html", message="User already exists..sorry!")
   db.execute("INSERT INTO users (username, password, rememberme) VALUES(:username, :password, :rememberme)", {"username": username, "password": password, "rememberme": rememberme})
   db.commit()
-  books = db.execute("SELECT * FROM books")
-  return render_template("success_register_user.html", message="You have successfully registered into the system... awesome!", books= books)
+  books = db.execute("SELECT * FROM books").fetchall()
+  return render_template("books.html", message="You have successfully registered into the system... awesome!", books= books)

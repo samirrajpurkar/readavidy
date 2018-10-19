@@ -10,7 +10,7 @@
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <strong>Success!</strong> {{message}}
     </div>
-    
+
   
     <table class="table">
       <thead>
@@ -26,7 +26,7 @@
         {% for book in books %}
           <tr>
             <th scope="row">{{book.id}}</th>
-            <td>{{book.isbn}}</td>
+            <td><a href="{{book.isbn}}">{{book.isbn}}</a></td>
             <td>{{book.title}}</td>
             <td>{{book.author}}</td>
             <td>{{book.year}}</td>

@@ -1,14 +1,45 @@
 {% extends "loggedinlayout.html" %}
 
 {% block title %}
-    Success!
+    Success Login!
 {% endblock %}
 
 {% block body %}
-    <h1>Logged In...</h1>
 
-    You have successfully logged in... Let us begin....!
-    {% for book in books %}
-      {{book.isbn}}
-    {%endfor %}
+  {% if message %}
+    <div class="alert alert-success alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong>Success!</strong> {{message}}
+    </div>
+  {% endif %}
+
+  
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">ISBN</th>
+          <th scope="col">Title</th>
+          <th scope="col">Author</th>
+          <th scope="col">Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in books %}
+          <tr>
+            <th scope="row">{{book.id}}</th>       
+            <td>
+              <a href="{{ url_for('book', book_id=book.id) }}">
+                {{book.isbn}}
+              </a>
+            </td>
+            <td>{{book.title}}</td>
+            <td>{{book.author}}</td>
+            <td>{{book.year}}</td>
+          </tr>    
+        {% endfor %}
+      </tbody>
+    </table>
+
+
 {% endblock %}
