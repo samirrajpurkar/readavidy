@@ -48,33 +48,88 @@ def books():
 @app.route("/add_review", methods=["POST"])
 def add_review():
   """Add review for that book"""
+
+  rating = request.form.get("rating")
+  try:
+    review = request.form.get("review")
+  except ValueError:
+    return render_template("error.html", message="Invalid review.")
+  username = request.form.get("username")
+  try:
+    user = db.execute("SELECT * FROM USERS WHERE username = :username", {
+      "username": username
+      }).fetchone()
+  except ValueError:
+    return render_template("error.html", message="Invalid review.")
+  user_id = user.user_id
+  book_id = request.form.get("book_id")
+
+  try:
+    db.execute("INSERT INTO REVIEWS (rating, review, user_id, book_id) VALUES(:rating, :review, :user_id, :book_id)", 
+      {
+        "rating": rating,
+        "review": review,
+        "user_id": user_id,
+        "book_id": book_id
+      })
+    db.commit()
+  except ValueError:
+    return render_template("error.html", message="Error in inserting a new review")
+
+  book = db.execute("SELECT * from BOOKS WHERE id = :book_id", {
+    "book_id": book_id
+    }).fetchone()
+
+  reviews = db.execute("SELECT * FROM REVIEWS WHERE book_id = :book_id", {
+    "book_id": book_id
+    }).fetchall()
+
   
-  # book = db.execute("SELECT * FROM books WHERE id = :id", {
-  #   "id": book_id,
-  #   }).fetchone()
+  print(book)
+  print(reviews)
+  print(user_id)
 
-  # # Get all reviews.
-  # reviews = db.execute("SELECT * FROM REVIEWS WHERE book_id = :book_id",
-  #                           {"book_id": book_id}).fetchall()
-  print(request.form.get("review"))
-  print("Adding review...")
-
-  return render_template("success.html", message="Success")
+  return render_template("book.html", book=book, reviews = reviews, user_id=user_id, addreviews = False)
 
 
 @app.route("/books/<int:book_id>")
 def book(book_id):
   """Lists details about a single book."""
 
-  book = db.execute("SELECT * FROM books WHERE id = :id", {
+  book = db.execute("SELECT * FROM BOOKS WHERE id = :id", {
     "id": book_id,
     }).fetchone()
 
   # Get all reviews.
   reviews = db.execute("SELECT * FROM REVIEWS WHERE book_id = :book_id",
                             {"book_id": book_id}).fetchall()
+  try:
+    user = db.execute("SELECT * FROM USERS WHERE username = :username", {
+      "username": session["username"]
+      }).fetchone()
+  except ValueError:
+    return render_template("error.html", message="user not found!")
 
-  return render_template("book.html", book=book, reviews = reviews, username=session["username"])
+  # check if the review exists for that user_id
+  # if yes then the user should not be able to add more reviews
+
+  print(user.user_id)
+  
+  reviewfound = db.execute("SELECT * FROM REVIEWS WHERE user_id = :user_id AND book_id = :book_id", {
+    "user_id": user.user_id,
+    "book_id": book_id
+    }).fetchone()
+
+  print(reviewfound)
+
+  if (reviewfound):
+    addreviews = False
+  else:
+    addreviews = True
+
+  print(addreviews)
+
+  return render_template("book.html", book=book, reviews = reviews, user_id=user.user_id, addreviews = addreviews)
 
 
 @app.route("/login_user", methods=["POST"])
