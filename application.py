@@ -93,4 +93,5 @@ def register_user():
     return render_template("error_register_user.html", message="User already exists..sorry!")
   db.execute("INSERT INTO users (username, password, rememberme) VALUES(:username, :password, :rememberme)", {"username": username, "password": password, "rememberme": rememberme})
   db.commit()
-  return redirect(url_for('books'))
+  books = db.execute("SELECT * FROM books")
+  return render_template("success_register_user.html", message="You have successfully registered into the system... awesome!", books= books)
