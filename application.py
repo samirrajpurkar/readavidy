@@ -33,6 +33,12 @@ def login():
 def register():
   return render_template("register.html")
 
+@app.route('/logout')
+def logout():
+   # remove the username from the session if it is there
+   #session.pop('username', None)
+   return redirect(url_for('index'))
+
 @app.route("/books")
 def books():
   books = db.execute("SELECT * FROM books").fetchall()
