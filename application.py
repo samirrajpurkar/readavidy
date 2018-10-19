@@ -84,10 +84,6 @@ def add_review():
     "book_id": book_id
     }).fetchall()
 
-  
-  print(book)
-  print(reviews)
-  print(user_id)
 
   return render_template("book.html", book=book, reviews = reviews, user_id=user_id, addreviews = False)
 
