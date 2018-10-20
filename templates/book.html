@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+    <div class="mt-3 mb-3"></div>
     <h5>Book Details</h5>
     
     <ul class="list-group list-group-flush">
@@ -14,10 +15,9 @@
       <li class="list-group-item">AUTHOR: {{book.author}}</li>
       <li class="list-group-item">YEAR: {{book.year}}</li>
     </ul>  
-    <hr>  
 
-    
     {% if reviews %}
+    <div class="mt-3 mb-3"></div>
     <h5>Review Details</h5>
     <table class="table">
       <thead>
@@ -45,7 +45,6 @@
 
     
     {% if addreviews %}
-    <hr>
     <h5>Add Review</h5>
     <form action="{{ url_for('add_review') }}" method="post">
 
@@ -81,7 +80,6 @@
         <div class="form-group">
             <button class="btn btn-primary">Add Review</button>
         </div>
-
     </form>
     {% endif %}
 {% endblock %}
