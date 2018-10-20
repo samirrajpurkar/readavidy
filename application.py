@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request, redirect, url_for
+from flask import Flask, session, render_template, request, redirect, url_for, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -47,6 +47,36 @@ def logout():
 def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
+
+@app.route("/api/<int:isbn_id>")
+def book_api(isbn_id):
+  """Return details about a single book."""
+
+  isbn_id = '%' + str(isbn_id) +'%'
+
+  # Make sure book exits.
+  try:
+    book = db.execute("SELECT * FROM BOOKS WHERE isbn like :isbn_id", {
+      "isbn_id": isbn_id
+      }).fetchone()
+  except ValueError:
+    return jsonify({
+      "error": "select database error"
+      }), 422
+
+  if book is None:
+    return jsonify({
+      "error": "Invalid isbn"
+      }), 422
+
+  return jsonify({
+    "id" : book.id,
+    "isbn": book.isbn,
+    "title": book.title,
+    "author": book.author,
+    "year": book.year
+    }), 200
+
 
 @app.route("/search_record", methods=["POST"])
 def search_record():
