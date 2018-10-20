@@ -19,7 +19,7 @@
     {% if reviews %}
     <div class="mt-3 mb-3"></div>
     <h5>Review Details</h5>
-    <table class="table">
+    <table class="table table-sm">
       <thead>
         <tr>
           <th scope="col">#</th>
@@ -45,6 +45,7 @@
 
     
     {% if addreviews %}
+    <div class="mt-3 mb-3"></div>
     <h5>Add Review</h5>
     <form action="{{ url_for('add_review') }}" method="post">
 
