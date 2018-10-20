@@ -7,10 +7,17 @@
 {% block body %}
 
   {% if message %}
-    <div class="alert alert-success alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <strong>Success!</strong> {{message}}
-    </div>
+    {% if messagetype == 'error' %}
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Error!</strong> {{message}}
+      </div>
+    {% else %}
+      <div class="alert alert-success alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Success!</strong> {{message}}
+      </div>
+    {% endif %}
   {% endif %}
 
   

@@ -33,6 +33,10 @@ def login():
 def register():
   return render_template("register.html")
 
+@app.route("/search")
+def search():
+  return render_template("search.html")
+
 @app.route('/logout')
 def logout():
    # remove the username from the session if it is there
@@ -44,6 +48,54 @@ def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
 
+@app.route("/search_record", methods=["POST"])
+def search_record():
+  
+  print(request.form.get("isbn"))
+  print(request.form.get("title"))
+  print(request.form.get("author"))
+  print(request.form.get("radio"))
+
+  isbn = request.form.get("isbn")
+  radio = request.form.get("radio")
+  title = request.form.get("title")
+
+  isbn = '%' + request.form.get("isbn") + '%'
+  title = ('%' + request.form.get("title") + '%').lower()
+  author = ('%' +request.form.get("author") + '%').lower()
+
+  
+  if request.form.get("radio") == "isbn":
+    try:
+      books = db.execute("SELECT * FROM BOOKS WHERE isbn like :isbn", {
+        "isbn": isbn
+        }).fetchall()  
+      if (len(books) == 0):
+        return render_template("books.html", books=books, message="Book not found", messagetype="error")  
+    except ValueError:
+      return render_template("books.html", books=books, message="Book not found", messagetype="error")
+  elif request.form.get("radio") == 'title':
+      try:
+        books = db.execute("SELECT * FROM BOOKS WHERE lower(title) like :title", {
+        "title": title
+        }).fetchall()  
+        if (len(books) == 0):
+          return render_template("books.html", books=books, message="Book not found", messagetype="error")  
+      except ValueError:
+        return render_template("books.html", books=books, message="Book not found", messagetype="error")
+  elif request.form.get("radio") == 'author':
+      try:
+        books = db.execute("SELECT * FROM BOOKS WHERE lower(author) like :author", {
+        "author": author
+        }).fetchall()  
+        if (len(books) == 0):
+          return render_template("books.html", books=books, message="Book not found", messagetype="error")  
+      except ValueError:
+        return render_template("books.html", books=books, message="Book not found", messagetype="error")
+  else:
+     return render_template("books.html", books=books, message="Book not found", messagetype="error")
+
+  return render_template("books.html", books=books)
 
 @app.route("/add_review", methods=["POST"])
 def add_review():
@@ -108,22 +160,16 @@ def book(book_id):
 
   # check if the review exists for that user_id
   # if yes then the user should not be able to add more reviews
-
-  print(user.user_id)
   
   reviewfound = db.execute("SELECT * FROM REVIEWS WHERE user_id = :user_id AND book_id = :book_id", {
     "user_id": user.user_id,
     "book_id": book_id
     }).fetchone()
 
-  print(reviewfound)
-
   if (reviewfound):
     addreviews = False
   else:
     addreviews = True
-
-  print(addreviews)
 
   return render_template("book.html", book=book, reviews = reviews, user_id=user.user_id, addreviews = addreviews)
 
@@ -151,7 +197,7 @@ def login_user():
   # check for the username and password
   if db.execute("SELECT * FROM users WHERE username = :username AND password = :password", {"username": username, "password": password}).rowcount == 1:
     books = db.execute("SELECT * FROM books").fetchall()
-    return render_template("books.html", message="You have successfully logged into the system... awesome!", books= books)
+    return render_template("books.html", message="You have successfully logged into the system... awesome!", messagetype='success', books= books)
   
   return render_template("error_login_user.html", message="Invalid Login attempt...")
 
@@ -185,4 +231,4 @@ def register_user():
   db.execute("INSERT INTO users (username, password, rememberme) VALUES(:username, :password, :rememberme)", {"username": username, "password": password, "rememberme": rememberme})
   db.commit()
   books = db.execute("SELECT * FROM books").fetchall()
-  return render_template("books.html", message="You have successfully registered into the system... awesome!", books= books)
+  return render_template("books.html", message="You have successfully registered into the system... awesome!", messagetype='success', books= books)
