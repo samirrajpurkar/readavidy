@@ -4,6 +4,10 @@ from flask import Flask, session, render_template, request, redirect, url_for, j
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import requests
+import json
+import urllib
+
 
 app = Flask(__name__)
 
@@ -48,33 +52,47 @@ def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
 
-@app.route("/api/<int:isbn_id>")
+@app.route("/api/<string:isbn_id>")
 def book_api(isbn_id):
   """Return details about a single book."""
+    
+  res = requests.get('https://www.goodreads.com/book/review_counts.json', 
+                      params = {
+                        'key1': 'Uo253OAVQpF0dJzIH9w', 
+                        'isbns': isbn_id })
 
-  isbn_id = '%' + str(isbn_id) +'%'
+  try:
+    grbook = res.json()
+  except ValueError:
+    grbook = None
+  
+  if grbook is None:
+    return jsonify({
+      "error": "Invalid isbn on goodreads"
+      }), 404
 
   # Make sure book exits.
   try:
-    book = db.execute("SELECT * FROM BOOKS WHERE isbn like :isbn_id", {
+    book = db.execute("SELECT * FROM BOOKS WHERE isbn = :isbn_id", {
       "isbn_id": isbn_id
       }).fetchone()
   except ValueError:
     return jsonify({
       "error": "select database error"
-      }), 422
+      }), 404
 
   if book is None:
     return jsonify({
-      "error": "Invalid isbn"
-      }), 422
+      "error": "Invalid isbn from readavidy"
+      }), 404
 
   return jsonify({
-    "id" : book.id,
-    "isbn": book.isbn,
     "title": book.title,
     "author": book.author,
-    "year": book.year
+    "year": book.year,
+    "isbn": grbook["books"][0].get('isbn'),
+    "reviewcount": grbook["books"][0].get('reviews_count'),
+    "averagescore": grbook["books"][0].get('average_rating')
     }), 200
 
 
