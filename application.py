@@ -52,7 +52,7 @@ def books():
   books = db.execute("SELECT * FROM books").fetchall()
   return render_template("books.html", books=books)
 
-@app.route("/api/<string:isbn_id>")
+@app.route("/api/<string:isbn_id>", methods=["GET"])
 def book_api(isbn_id):
   """Return details about a single book."""
     
